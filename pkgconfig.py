@@ -111,14 +111,17 @@ def installed(package, version):
         msg = "{0} is not a correct version specifier".format(version)
         raise ValueError(msg)
 
-    comparison_table = {
-        '>': result > 0,
-        '>=': result >= 0,
-        '': result == 0,
-        '=': result == 0,
-        '==': result == 0,
-        '<=': result <= 0,
-        '<': result < 0
-    }
+    if comparator in ('', '=', '=='):
+        return result == 0
 
-    return comparison_table[comparator]
+    if comparator == '>':
+        return result > 0
+
+    if comparator == '>=':
+        return result >= 0
+
+    if comparator == '<':
+        return result < 0
+
+    if comparator == '<=':
+        return result <= 0
