@@ -46,6 +46,17 @@ def _split_version_specifier(spec):
     return m.group(2), m.group(1)
 
 
+def _convert_error(func):
+    def _wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except OSError:
+            raise EnvironmentError("pkg-config is not installed")
+
+    return _wrapper
+
+
+@_convert_error
 def _query(package, option):
     cmd = 'pkg-config {0} {1}'.format(option, package).split()
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
@@ -53,13 +64,11 @@ def _query(package, option):
     return out.rstrip()
 
 
+@_convert_error
 def exists(package):
     """Return True if package information is available."""
-    try:
-        cmd = 'pkg-config --exists {0}'.format(package).split()
-        return subprocess.call(cmd) == 0
-    except OSError:
-        raise EnvironmentError("pkg-config not installed")
+    cmd = 'pkg-config --exists {0}'.format(package).split()
+    return subprocess.call(cmd) == 0
 
 
 def cflags(package):
