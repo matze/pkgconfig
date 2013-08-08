@@ -59,8 +59,10 @@ def _convert_error(func):
 @_convert_error
 def _query(package, option):
     cmd = 'pkg-config {0} {1}'.format(option, package).split()
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
     out, err = proc.communicate()
+
     return out.rstrip()
 
 
