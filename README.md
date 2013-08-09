@@ -1,5 +1,7 @@
 # pkgconfig
 
+[![Build Status](https://travis-ci.org/matze/pkgconfig.png?branch=master)](https://travis-ci.org/matze/pkgconfig)
+
 `pkgconfig` is a Python module to interface with the `pkg-config` command line
 tool.
 
