@@ -73,6 +73,12 @@ def exists(package):
     return subprocess.call(cmd) == 0
 
 
+@_convert_error
+def requires(package):
+    """Return a list of package names that is required by the package"""
+    return _query(package, '--print-requires').split('\n')
+
+
 def cflags(package):
     """Return the CFLAGS string returned by pkg-config."""
     return _query(package, '--cflags')
