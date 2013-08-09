@@ -1,1 +1,1 @@
-from pkgconfig import *
+from .pkgconfig import *
