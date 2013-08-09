@@ -37,7 +37,10 @@ def _compare_versions(v1, v2):
     def normalize(v):
         return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
 
-    return cmp(normalize(v1), normalize(v2))
+    n1 = normalize(v1)
+    n2 = normalize(v2)
+
+    return (n1 > n2) - (n1 < n2)
 
 
 def _split_version_specifier(spec):
@@ -63,7 +66,7 @@ def _query(package, option):
                             stderr=subprocess.PIPE)
     out, err = proc.communicate()
 
-    return out.rstrip()
+    return out.rstrip().decode('utf-8')
 
 
 @_convert_error
