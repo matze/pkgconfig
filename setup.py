@@ -11,7 +11,7 @@ setup(
     license='MIT',
     packages=['pkgconfig'],
     description="Interface Python with pkg-config",
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     tests_require=['nose'],
     test_suite='test',
 )
