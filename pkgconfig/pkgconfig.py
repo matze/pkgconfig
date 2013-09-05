@@ -24,6 +24,7 @@ tool."""
 
 import subprocess
 import re
+import collections
 
 
 def _compare_versions(v1, v2):
@@ -134,3 +135,46 @@ def installed(package, version):
 
     if comparator == '<=':
         return result <= 0
+
+
+_PARSE_MAP = {
+    '-D': 'define_macros',
+    '-I': 'include_dirs',
+    '-L': 'library_dirs',
+    '-l': 'libraries'
+}
+
+
+def parse(package):
+    """
+    Parse the output from pkg-config about the passed package.
+
+    Builds a dictionary containing the 'libraries', the 'library_dirs',
+    the 'include_dirs', and the 'define_macros' that are presented by
+    pkg-config.
+    """
+    result = collections.defaultdict(set)
+
+    # Execute the query to pkg-config and clean the result.
+    out = _query(package, '--cflags --libs')
+    out = out.replace('\\"', '')
+
+    # Iterate through each token in the output.
+    for token in out.split():
+        key = _PARSE_MAP.get(token[:2])
+        if key:
+            result[key].add(token[2:].strip())
+
+    # Iterate and clean define macros.
+    macros = set()
+    for declaration in result['define_macros']:
+        macro = tuple(declaration.split('='))
+        if len(macro) == 1:
+            macro += '',
+
+        macros.add(macro)
+
+    result['define_macros'] = macros
+
+    # Return parsed configuration.
+    return result
