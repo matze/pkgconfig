@@ -27,4 +27,9 @@ It can be used to
        >>> pkgconfig.libs('glib-2.0')
        '-lglib-2.0'
 
+-  parse the output to build extensions with setup.py ::
+       >>> d = pkgconfig.parse('glib-2.0')
+       >>> d['libraries']
+       set([u'glib-2.0'])
+
 The ``pkgconfig`` module is licensed under the MIT license.
