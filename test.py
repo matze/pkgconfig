@@ -37,3 +37,12 @@ def test_libs():
 
     for flag in flags.split(' '):
         nt.assert_true(flag in ('-L/usr/lib64', '-lgtk-3'))
+
+
+def test_parse():
+    config = pkgconfig.parse(PACKAGE_NAME)
+
+    nt.assert_true(('GSEAL_ENABLE', '') in config['define_macros'])
+    nt.assert_true('/usr/include/gtk-3.0' in config['include_dirs'])
+    nt.assert_true('/usr/lib64' in config['library_dirs'])
+    nt.assert_true('gtk-3' in config['libraries'])
