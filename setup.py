@@ -12,6 +12,6 @@ setup(
     packages=['pkgconfig'],
     description="Interface Python with pkg-config",
     long_description=open('README.rst').read(),
-    tests_require=['nose'],
+    setup_requires=['nose>=1.0'],
     test_suite='test',
 )

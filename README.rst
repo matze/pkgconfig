@@ -28,6 +28,7 @@ It can be used to
        '-lglib-2.0'
 
 -  parse the output to build extensions with setup.py ::
+
        >>> d = pkgconfig.parse('glib-2.0')
        >>> d['libraries']
        set([u'glib-2.0'])
