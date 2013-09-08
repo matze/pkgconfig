@@ -44,5 +44,5 @@ def test_parse():
 
     nt.assert_true(('GSEAL_ENABLE', '') in config['define_macros'])
     nt.assert_true('/usr/include/gtk-3.0' in config['include_dirs'])
-    nt.assert_true('/usr/lib64' in config['library_dirs'])
+    nt.assert_true('/usr/lib64' in config['library_dirs'] or not config['library_dirs'])
     nt.assert_true('gtk-3' in config['libraries'])
