@@ -29,8 +29,8 @@ It can be used to
 
 -  parse the output to build extensions with setup.py ::
 
-       >>> d = pkgconfig.parse('glib-2.0')
+       >>> d = pkgconfig.parse('glib-2.0 gtk+-2.0')
        >>> d['libraries']
-       set([u'glib-2.0'])
+       set([u'glib-2.0', u'gtk+-2.0'])
 
 The ``pkgconfig`` module is licensed under the MIT license.
