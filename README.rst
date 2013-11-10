@@ -34,3 +34,20 @@ It can be used to
        set([u'glib-2.0', u'gtk+-2.0'])
 
 The ``pkgconfig`` module is licensed under the MIT license.
+
+
+Changelog
+---------
+
+Version 1.1.0
+~~~~~~~~~~~~~
+
+Released on November 6th 2013.
+
+- Multiple packages can now be parsed with a single call to ``.parse``.
+
+
+Version 1.0.0
+~~~~~~~~~~~~~
+
+First release on September 8th 2013.
