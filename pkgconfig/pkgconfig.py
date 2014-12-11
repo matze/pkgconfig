@@ -72,19 +72,31 @@ def _query(package, option):
 
 @_convert_error
 def exists(package):
-    """Return True if package information is available."""
+    """
+    Return True if package information is available.
+
+    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    """
     cmd = 'pkg-config --exists {0}'.format(package).split()
     return subprocess.call(cmd) == 0
 
 
 @_convert_error
 def requires(package):
-    """Return a list of package names that is required by the package"""
+    """
+    Return a list of package names that is required by the package.
+
+    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    """
     return _query(package, '--print-requires').split('\n')
 
 
 def cflags(package):
-    """Return the CFLAGS string returned by pkg-config."""
+    """
+    Return the CFLAGS string returned by pkg-config.
+
+    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    """
     return _query(package, '--cflags')
 
 
@@ -108,6 +120,8 @@ def installed(package, version):
     False
     >>> installed('foo', '>= 0.0.4')
     True
+
+    If ``pkg-config`` not on path, raises ``EnvironmentError``.
     """
     if not exists(package):
         return False
@@ -152,6 +166,8 @@ def parse(packages):
     Builds a dictionary containing the 'libraries', the 'library_dirs',
     the 'include_dirs', and the 'define_macros' that are presented by
     pkg-config. *package* is a string with space-delimited package names.
+
+    If ``pkg-config`` not on path, raises ``EnvironmentError``.
     """
     def parse_package(package):
         result = collections.defaultdict(set)
