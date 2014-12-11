@@ -25,6 +25,7 @@ tool."""
 import subprocess
 import re
 import collections
+from functools import wraps
 
 
 def _compare_versions(v1, v2):
@@ -51,6 +52,7 @@ def _split_version_specifier(spec):
 
 
 def _convert_error(func):
+    @wraps(func)
     def _wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
