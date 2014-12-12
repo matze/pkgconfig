@@ -22,6 +22,7 @@
 """pkgconfig is a Python module to interface with the pkg-config command line
 tool."""
 
+import os
 import subprocess
 import re
 import collections
@@ -64,7 +65,8 @@ def _convert_error(func):
 
 @_convert_error
 def _query(package, option):
-    cmd = 'pkg-config {0} {1}'.format(option, package).split()
+    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
+    cmd = '{0} {1} {2}'.format(pkg_config_exe, option, package).split()
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     out, err = proc.communicate()
@@ -79,7 +81,8 @@ def exists(package):
 
     If ``pkg-config`` not on path, raises ``EnvironmentError``.
     """
-    cmd = 'pkg-config --exists {0}'.format(package).split()
+    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
+    cmd = '{0} --exists {1}'.format(pkg_config_exe, package).split()
     return subprocess.call(cmd) == 0
 
 
