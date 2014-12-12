@@ -33,6 +33,8 @@ It can be used to
        >>> d['libraries']
        set([u'glib-2.0', u'gtk+-2.0'])
 
+If ``pkg-config`` is not on the path, raises ``EnvironmentError``.
+
 The ``pkgconfig`` module is licensed under the MIT license.
 
 
