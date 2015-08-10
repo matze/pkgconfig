@@ -9,6 +9,10 @@ command line tool and supports Python 2.6+.
 
 It can be used to
 
+-  find all pkg-config packages ::
+
+       >>> packages = pkgconfig.list_all()
+
 -  check if a package exists ::
 
        >>> pkgconfig.exists('glib-2.0')

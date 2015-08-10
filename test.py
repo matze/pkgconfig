@@ -48,3 +48,9 @@ def test_parse():
     nt.assert_true('gtk-3' in config['libraries'])
 
     nt.assert_true('/usr/include/python2.7' in config['include_dirs'])
+
+
+def test_listall():
+    packages = pkgconfig.list_all()
+    nt.assert_true('fake-gtk+-3.0' in packages)
+    nt.assert_true('fake-python' in packages)

@@ -209,3 +209,9 @@ def parse(packages):
             result[k].update(v)
 
     return result
+
+
+def list_all():
+    """Return a list of all packages found by pkg-config."""
+    packages = [line.split()[0] for line in _query('', '--list-all').split('\n')]
+    return packages
