@@ -8,6 +8,6 @@ python:
     - "3.4"
 
 install:
-    - pip install nose --use-mirrors
+    - pip install nose
 
 script: nosetests
