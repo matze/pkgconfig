@@ -175,7 +175,7 @@ def parse(packages):
     If ``pkg-config`` not on path, raises ``EnvironmentError``.
     """
     def parse_package(package):
-        result = collections.defaultdict(set)
+        result = collections.defaultdict(list)
 
         # Execute the query to pkg-config and clean the result.
         out = _query(package, '--cflags --libs')
@@ -185,16 +185,16 @@ def parse(packages):
         for token in out.split():
             key = _PARSE_MAP.get(token[:2])
             if key:
-                result[key].add(token[2:].strip())
+                result[key].append(token[2:].strip())
 
         # Iterate and clean define macros.
-        macros = set()
+        macros = list()
         for declaration in result['define_macros']:
             macro = tuple(declaration.split('='))
             if len(macro) == 1:
                 macro += '',
 
-            macros.add(macro)
+            macros.append(macro)
 
         result['define_macros'] = macros
 
@@ -202,11 +202,12 @@ def parse(packages):
         return result
 
     # Go through all package names and update the result dict accordingly.
-    result = collections.defaultdict(set)
+    result = collections.defaultdict(list)
 
     for package in packages.split():
         for k, v in parse_package(package).items():
-            result[k].update(v)
+            # Appending would create a list of lists
+            result[k] = result[k] + v
 
     return result
 
