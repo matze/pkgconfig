@@ -201,15 +201,10 @@ def parse(packages):
         # Return parsed configuration.
         return result
 
-    # Go through all package names and update the result dict accordingly.
-    result = collections.defaultdict(list)
+    # Return the result of parse_package directly.
+    # We don't need to loop over the packages
 
-    for package in packages.split():
-        for k, v in parse_package(package).items():
-            # Appending would create a list of lists
-            result[k] = result[k] + v
-
-    return result
+    return parse_package(packages)
 
 
 def list_all():
