@@ -49,6 +49,16 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.2.0
+~~~~~~~~~~~~~
+
+Released on November 30th 2016.
+
+- Potential break: switch from result set to list
+- Expose --list-all query
+- Added support for PKG_CONFIG environment variable
+
+
 Version 1.1.0
 ~~~~~~~~~~~~~
 
