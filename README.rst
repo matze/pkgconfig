@@ -35,7 +35,11 @@ It can be used to
 
        >>> d = pkgconfig.parse('glib-2.0 gtk+-2.0')
        >>> d['libraries']
-       set([u'glib-2.0', u'gtk+-2.0'])
+       [u'gtk+-2.0', u'glib-2.0']
+
+   The ``pkgconfig.parse`` function return a dictonary of list.
+   The lists returned are an accurate representations of the equivalent
+   ``pkg-config`` call, both in content and order.
 
 If ``pkg-config`` is not on the path, raises ``EnvironmentError``.
 
