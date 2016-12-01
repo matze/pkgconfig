@@ -1,6 +1,6 @@
 prefix=/usr
 exec_prefix=/usr
-libdir=/usr/lib64
+libdir=/usr/lib_gtk_foo
 includedir=/usr/include
 targets=x11 broadway
 
