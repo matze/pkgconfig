@@ -49,12 +49,13 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
-Version 1.2.1
-~~~~~~~~~~~~~
+Version 1.2.1 and 1.2.2
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Bug fix release released on December 1st 2016.
+Bug fix releases released on December 1st and 2nd 2016.
 
 - Include the ``data`` folder in the distribution in order to run tests
+- Improve the tests
 
 
 Version 1.2.0
