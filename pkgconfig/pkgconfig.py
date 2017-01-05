@@ -182,7 +182,7 @@ def parse(packages):
         out = out.replace('\\"', '')
 
         # Iterate through each token in the output.
-        for token in out.split():
+        for token in re.split(r'(?<!\\) ', out):
             key = _PARSE_MAP.get(token[:2])
             if key:
                 result[key].append(token[2:].strip())
