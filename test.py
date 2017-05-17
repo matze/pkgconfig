@@ -55,3 +55,17 @@ def test_listall():
     packages = pkgconfig.list_all()
     nt.assert_true('fake-gtk+-3.0' in packages)
     nt.assert_true('fake-python' in packages)
+
+
+def test_variables():
+    variables = pkgconfig.variables('fake-python')
+
+    nt.assert_true('prefix' in variables)
+    nt.assert_true('exec_prefix' in variables)
+    nt.assert_true('libdir' in variables)
+    nt.assert_true('includedir' in variables)
+
+    nt.assert_true(variables['prefix'] == '/usr')
+    nt.assert_true(variables['exec_prefix'] == '/usr')
+    nt.assert_true(variables['libdir'] == '/usr/lib_python_foo')
+    nt.assert_true(variables['includedir'] == '/usr/include')

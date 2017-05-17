@@ -23,10 +23,11 @@
 tool."""
 
 import os
-import subprocess
+import shlex
 import re
 import collections
 from functools import wraps
+from subprocess import call, PIPE, Popen
 
 
 def _compare_versions(v1, v2):
@@ -66,9 +67,8 @@ def _convert_error(func):
 @_convert_error
 def _query(package, option):
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
-    cmd = '{0} {1} {2}'.format(pkg_config_exe, option, package).split()
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    cmd = '{0} {1} {2}'.format(pkg_config_exe, option, package)
+    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate()
 
     return out.rstrip().decode('utf-8')
@@ -83,7 +83,7 @@ def exists(package):
     """
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
     cmd = '{0} --exists {1}'.format(pkg_config_exe, package).split()
-    return subprocess.call(cmd) == 0
+    return call(cmd) == 0
 
 
 @_convert_error
@@ -108,6 +108,36 @@ def cflags(package):
 def libs(package):
     """Return the LDFLAGS string returned by pkg-config."""
     return _query(package, '--libs')
+
+
+def variables(package):
+    """Return a dictionary of all the variables defined in the .pc pkg-config
+     file of 'packae'"""
+    if not exists(package):
+        msg = ('package "{}" does not exist in PKG_CONFIG_PATH or\n'
+               'or something else went wrong').format(package)
+        raise ValueError(msg)
+
+    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
+
+    # get the list of all the variables defined in the .pc file
+    cmd = '{0} {1} {2}'.format(
+        pkg_config_exe, '--print-variables', package)
+
+    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    out, _ = proc.communicate()
+    _variables = filter(lambda x: x != '', out.decode('utf-8').split('\n'))
+
+    # get the variable values
+    retval = dict()
+    for variable in _variables:
+        cmd = '{0} --variable={1} {2}'.format(
+            pkg_config_exe, variable, package)
+        proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+        out, _ = proc.communicate()
+        retval[variable] = out.decode('utf-8').strip()
+
+    return retval
 
 
 def installed(package, version):
