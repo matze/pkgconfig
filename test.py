@@ -42,7 +42,7 @@ def test_libs():
 def test_parse():
     config = pkgconfig.parse("fake-gtk+-3.0 fake-python")
 
-    nt.assert_true(('GSEAL_ENABLE', '') in config['define_macros'])
+    nt.assert_true(('GSEAL_ENABLE', None) in config['define_macros'])
     nt.assert_true('/usr/include/gtk-3.0' in config['include_dirs'])
     nt.assert_true('/usr/lib_gtk_foo' in config['library_dirs'])
     nt.assert_true('/usr/lib_python_foo' in config['library_dirs'])
