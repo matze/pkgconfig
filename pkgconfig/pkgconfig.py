@@ -222,7 +222,7 @@ def parse(packages):
         for declaration in result['define_macros']:
             macro = tuple(declaration.split('='))
             if len(macro) == 1:
-                macro += '',
+                macro += None,
 
             macros.append(macro)
 
