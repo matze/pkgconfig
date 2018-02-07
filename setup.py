@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '1.2.2'
+VERSION = '1.3.0'
 
 setup(
     name='pkgconfig',

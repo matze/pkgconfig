@@ -49,6 +49,13 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.3.0
+~~~~~~~~~~~~~
+
+- Add variables() API to query defined variables
+- Disable Python 3.2 and enable Python 3.5 and 3.6 tests
+- Fix #16: handle spaces of values in .pc files correctly
+
 Version 1.2.1 and 1.2.2
 ~~~~~~~~~~~~~~~~~~~~~~~
 
