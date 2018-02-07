@@ -31,6 +31,11 @@ It can be used to
        >>> pkgconfig.libs('glib-2.0')
        '-lglib-2.0'
 
+-  get all variables defined for a package::
+
+        >>> pkgconfig.variables('glib-2.0')
+        {u'exec_prefix': u'/usr'}
+
 -  parse the output to build extensions with setup.py ::
 
        >>> d = pkgconfig.parse('glib-2.0 gtk+-2.0')
