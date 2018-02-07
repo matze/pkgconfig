@@ -111,33 +111,17 @@ def libs(package):
 
 
 def variables(package):
-    """Return a dictionary of all the variables defined in the .pc pkg-config
-     file of 'packae'"""
+    """
+    Return a dictionary of all the variables defined in the .pc pkg-config file
+    of 'package'.
+    """
     if not exists(package):
-        msg = ('package "{}" does not exist in PKG_CONFIG_PATH or\n'
-               'or something else went wrong').format(package)
+        msg = "Package `{}' does not exist in PKG_CONFIG_PATH".format(package)
         raise ValueError(msg)
 
-    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
-
-    # get the list of all the variables defined in the .pc file
-    cmd = '{0} {1} {2}'.format(
-        pkg_config_exe, '--print-variables', package)
-
-    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-    out, _ = proc.communicate()
-    _variables = filter(lambda x: x != '', out.decode('utf-8').split('\n'))
-
-    # get the variable values
-    retval = dict()
-    for variable in _variables:
-        cmd = '{0} --variable={1} {2}'.format(
-            pkg_config_exe, variable, package)
-        proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-        out, _ = proc.communicate()
-        retval[variable] = out.decode('utf-8').strip()
-
-    return retval
+    result = _query(package, '--print-variables')
+    names = filter(lambda x: x != '', result.split('\n'))
+    return dict(((x, _query(package, '--variable={}'.format(x)).strip()) for x in names))
 
 
 def installed(package, version):
