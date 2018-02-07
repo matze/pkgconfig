@@ -116,12 +116,12 @@ def variables(package):
     of 'package'.
     """
     if not exists(package):
-        msg = "Package `{}' does not exist in PKG_CONFIG_PATH".format(package)
+        msg = "Package `{0}' does not exist in PKG_CONFIG_PATH".format(package)
         raise ValueError(msg)
 
     result = _query(package, '--print-variables')
-    names = filter(lambda x: x != '', result.split('\n'))
-    return dict(((x, _query(package, '--variable={}'.format(x)).strip()) for x in names))
+    names = (x for x in result.split('\n') if x != '')
+    return dict(((x, _query(package, '--variable={0}'.format(x)).strip()) for x in names))
 
 
 def installed(package, version):
