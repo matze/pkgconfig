@@ -65,17 +65,17 @@ def _convert_error(func):
 
 
 @_convert_error
-def _query(package, option):
+def _query(package, option, **kwargs):
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
     cmd = '{0} {1} {2}'.format(pkg_config_exe, option, package)
-    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, **kwargs)
     out, err = proc.communicate()
 
     return out.rstrip().decode('utf-8')
 
 
 @_convert_error
-def exists(package):
+def exists(package, **kwargs):
     """
     Return True if package information is available.
 
@@ -83,34 +83,34 @@ def exists(package):
     """
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
     cmd = '{0} --exists {1}'.format(pkg_config_exe, package).split()
-    return call(cmd) == 0
+    return call(cmd, **kwargs) == 0
 
 
 @_convert_error
-def requires(package):
+def requires(package, **kwargs):
     """
     Return a list of package names that is required by the package.
 
     If ``pkg-config`` not on path, raises ``EnvironmentError``.
     """
-    return _query(package, '--print-requires').split('\n')
+    return _query(package, '--print-requires', **kwargs).split('\n')
 
 
-def cflags(package):
+def cflags(package, **kwargs):
     """
     Return the CFLAGS string returned by pkg-config.
 
     If ``pkg-config`` not on path, raises ``EnvironmentError``.
     """
-    return _query(package, '--cflags')
+    return _query(package, '--cflags', **kwargs)
 
 
-def libs(package):
+def libs(package, **kwargs):
     """Return the LDFLAGS string returned by pkg-config."""
-    return _query(package, '--libs')
+    return _query(package, '--libs', **kwargs)
 
 
-def variables(package):
+def variables(package, **kwargs):
     """Return a dictionary of all the variables defined in the .pc pkg-config
      file of 'packae'"""
     if not exists(package):
@@ -124,7 +124,7 @@ def variables(package):
     cmd = '{0} {1} {2}'.format(
         pkg_config_exe, '--print-variables', package)
 
-    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, **kwargs)
     out, _ = proc.communicate()
     _variables = filter(lambda x: x != '', out.decode('utf-8').split('\n'))
 
@@ -133,14 +133,14 @@ def variables(package):
     for variable in _variables:
         cmd = '{0} --variable={1} {2}'.format(
             pkg_config_exe, variable, package)
-        proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+        proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, **kwargs)
         out, _ = proc.communicate()
         retval[variable] = out.decode('utf-8').strip()
 
     return retval
 
 
-def installed(package, version):
+def installed(package, version, **kwargs):
     """
     Check if the package meets the required version.
 
@@ -162,7 +162,7 @@ def installed(package, version):
         return False
 
     number, comparator = _split_version_specifier(version)
-    modversion = _query(package, '--modversion')
+    modversion = _query(package, '--modversion', **kwargs)
 
     try:
         result = _compare_versions(modversion, number)
@@ -194,7 +194,7 @@ _PARSE_MAP = {
 }
 
 
-def parse(packages):
+def parse(packages, **kwargs):
     """
     Parse the output from pkg-config about the passed package or packages.
 
@@ -208,7 +208,7 @@ def parse(packages):
         result = collections.defaultdict(list)
 
         # Execute the query to pkg-config and clean the result.
-        out = _query(package, '--cflags --libs')
+        out = _query(package, '--cflags --libs', **kwargs)
         out = out.replace('\\"', '')
 
         # Iterate through each token in the output.
@@ -237,7 +237,9 @@ def parse(packages):
     return parse_package(packages)
 
 
-def list_all():
+def list_all(**kwargs):
     """Return a list of all packages found by pkg-config."""
-    packages = [line.split()[0] for line in _query('', '--list-all').split('\n')]
+    packages = [
+        line.split()[0]
+        for line in _query('', '--list-all', **kwargs).split('\n')]
     return packages
