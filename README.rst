@@ -54,6 +54,11 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.3.1
+~~~~~~~~~~~~~
+
+- Fix compatibility problems with Python 2.6
+
 Version 1.3.0
 ~~~~~~~~~~~~~
 
