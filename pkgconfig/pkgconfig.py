@@ -59,8 +59,7 @@ def _convert_error(func):
         try:
             return func(*args, **kwargs)
         except OSError as e:
-            raise EnvironmentError("pkg-config is probably not installed") from e
-
+            raise EnvironmentError("pkg-config is probably not installed. Could not run pkg-config: %r"%e)
     return _wrapper
 
 
