@@ -181,43 +181,28 @@ def parse(packages):
     """
     Parse the output from pkg-config about the passed package or packages.
 
-    Builds a dictionary containing the 'libraries', the 'library_dirs',
-    the 'include_dirs', and the 'define_macros' that are presented by
-    pkg-config. *package* is a string with space-delimited package names.
+    Builds a dictionary containing the 'libraries', the 'library_dirs', the
+    'include_dirs', and the 'define_macros' that are presented by pkg-config.
+    *package* is a string with space-delimited package names.
 
-    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` is not on path, raises ``EnvironmentError``.
     """
-    def parse_package(package):
-        result = collections.defaultdict(list)
+    out = _query(packages, '--cflags --libs')
+    out = out.replace('\\"', '')
+    result = collections.defaultdict(list)
 
-        # Execute the query to pkg-config and clean the result.
-        out = _query(package, '--cflags --libs')
-        out = out.replace('\\"', '')
+    for token in re.split(r'(?<!\\) ', out):
+        key = _PARSE_MAP.get(token[:2])
+        if key:
+            result[key].append(token[2:].strip())
 
-        # Iterate through each token in the output.
-        for token in re.split(r'(?<!\\) ', out):
-            key = _PARSE_MAP.get(token[:2])
-            if key:
-                result[key].append(token[2:].strip())
+    def split(m):
+        t = tuple(m.split('='))
+        return t if len(t) > 1 else (t[0], None)
 
-        # Iterate and clean define macros.
-        macros = list()
-        for declaration in result['define_macros']:
-            macro = tuple(declaration.split('='))
-            if len(macro) == 1:
-                macro += None,
+    result['define_macros'] = [split(m) for m in result['define_macros']]
 
-            macros.append(macro)
-
-        result['define_macros'] = macros
-
-        # Return parsed configuration.
-        return result
-
-    # Return the result of parse_package directly.
-    # We don't need to loop over the packages
-
-    return parse_package(packages)
+    return result
 
 
 def list_all():
