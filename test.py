@@ -39,6 +39,14 @@ def test_libs():
         nt.assert_true(flag in ('-L/usr/lib_gtk_foo', '-lgtk-3'))
 
 
+def test_libs_static():
+    flags = pkgconfig.libs('fake-python', static=True)
+    flags = flags.split(' ')
+    nt.assert_true('-lpthread' in flags)
+    nt.assert_true('-ldl' in flags)
+    nt.assert_true('-lutil' in flags)
+
+
 def test_parse():
     config = pkgconfig.parse("fake-gtk+-3.0 fake-python")
 
@@ -49,6 +57,16 @@ def test_parse():
     nt.assert_true('gtk-3' in config['libraries'])
 
     nt.assert_true('/usr/include/python2.7' in config['include_dirs'])
+
+
+def test_parse_static():
+    config = pkgconfig.parse("fake-python", static=True)
+    nt.assert_true('/usr/lib_python_foo' in config['library_dirs'])
+    nt.assert_true('/usr/include/python2.7' in config['include_dirs'])
+    nt.assert_true('python2.7' in config['libraries'])
+    nt.assert_true('pthread' in config['libraries'])
+    nt.assert_true('dl' in config['libraries'])
+    nt.assert_true('util' in config['libraries'])
 
 
 def test_listall():
