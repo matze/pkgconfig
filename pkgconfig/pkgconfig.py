@@ -74,10 +74,7 @@ def _query(package, *options):
 
 
 def _build_options(option, static=False):
-    options = [option]
-    if static is True:
-        options.append('--static')
-    return options
+    return (option, '--static') if static else (option,)
 
 
 @_convert_error
