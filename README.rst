@@ -54,6 +54,12 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.4.0
+~~~~~~~~~~~~~
+
+- Add boolean ``static`` keyword to output private libraries as well
+- Raise original ``OSError`` as well
+
 Version 1.3.1
 ~~~~~~~~~~~~~
 
