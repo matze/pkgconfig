@@ -64,13 +64,20 @@ def _convert_error(func):
 
 
 @_convert_error
-def _query(package, option):
+def _query(package, *options):
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
-    cmd = '{0} {1} {2}'.format(pkg_config_exe, option, package)
+    cmd = '{0} {1} {2}'.format(pkg_config_exe, ' '.join(options), package)
     proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate()
 
     return out.rstrip().decode('utf-8')
+
+
+def _build_options(option, static=False):
+    options = [option]
+    if static is True:
+        options.append('--static')
+    return options
 
 
 @_convert_error
@@ -104,9 +111,15 @@ def cflags(package):
     return _query(package, '--cflags')
 
 
-def libs(package):
-    """Return the LDFLAGS string returned by pkg-config."""
-    return _query(package, '--libs')
+def libs(package, static=False):
+    """
+    Return the LDFLAGS string returned by pkg-config.
+
+    The static specifier will also include libraries for static linking (i.e.,
+    includes any private libraries).
+    """
+
+    return _query(package, *_build_options('--libs', static=static))
 
 
 def variables(package):
@@ -177,7 +190,7 @@ _PARSE_MAP = {
 }
 
 
-def parse(packages):
+def parse(packages, static=False):
     """
     Parse the output from pkg-config about the passed package or packages.
 
@@ -185,9 +198,12 @@ def parse(packages):
     'include_dirs', and the 'define_macros' that are presented by pkg-config.
     *package* is a string with space-delimited package names.
 
+    The static specifier will also include libraries for static linking (i.e.,
+    includes any private libraries).
+
     If ``pkg-config`` is not on path, raises ``EnvironmentError``.
     """
-    out = _query(packages, '--cflags --libs')
+    out = _query(packages, *_build_options('--cflags --libs', static=static))
     out = out.replace('\\"', '')
     result = collections.defaultdict(list)
 
