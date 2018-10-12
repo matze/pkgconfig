@@ -15,6 +15,6 @@ matrix:
           dist: xenial
 
 install:
-    - pip install nose
+    - pip install pytest
 
-script: nosetests
+script: python -m pytest
