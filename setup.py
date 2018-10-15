@@ -12,7 +12,7 @@ setup(
     packages=['pkgconfig'],
     description="Interface Python with pkg-config",
     long_description=open('README.rst').read(),
-    tests_require=['nose>=1.0'],
+    tests_require=['pytest >= 3.8.2'],
     python_requires='>=2.6, !=3.0.*, !=3.1.*, !=3.2.*',
     test_suite='test',
 )
