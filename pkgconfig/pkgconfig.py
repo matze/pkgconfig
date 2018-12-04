@@ -129,7 +129,7 @@ def variables(package):
         raise ValueError(msg)
 
     result = _query(package, '--print-variables')
-    names = (x for x in result.split('\n') if x != '')
+    names = (x.strip() for x in result.split('\n') if x != '')
     return dict(((x, _query(package, '--variable={0}'.format(x)).strip()) for x in names))
 
 
