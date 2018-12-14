@@ -23,6 +23,10 @@ It can be used to
        >>> pkgconfig.installed('glib-2.0', '< 2.26')
        False
 
+-  return the version ::
+       >>> pkgconfig.modversion('glib-2.0')
+       '2.56.3'
+
 -  query CFLAGS and LDFLAGS ::
 
        >>> pkgconfig.cflags('glib-2.0')

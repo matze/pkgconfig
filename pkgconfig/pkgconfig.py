@@ -103,9 +103,18 @@ def cflags(package):
     """
     Return the CFLAGS string returned by pkg-config.
 
-    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` is not on path, raises ``EnvironmentError``.
     """
     return _query(package, '--cflags')
+
+
+def modversion(package):
+    """
+    Return the version returned by pkg-config.
+
+    If `pkg-config` is not in the path, raises ``EnvironmentError``.
+    """
+    return _query(package, '--modversion')
 
 
 def libs(package, static=False):

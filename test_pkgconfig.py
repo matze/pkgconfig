@@ -23,6 +23,10 @@ def test_version(version, expected):
     assert pkgconfig.installed(PACKAGE_NAME, version) == expected
 
 
+def test_modversion():
+    assert pkgconfig.modversion(PACKAGE_NAME) == '3.2.1'
+
+
 def test_cflags():
     flags = pkgconfig.cflags(PACKAGE_NAME)
 
