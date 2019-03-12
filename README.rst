@@ -5,7 +5,7 @@ pkgconfig
     :target: https://travis-ci.org/matze/pkgconfig
 
 ``pkgconfig`` is a Python module to interface with the ``pkg-config``
-command line tool and supports Python 2.6+.
+command line tool and supports Python 2.6+ and 3.3+.
 
 It can be used to
 
@@ -46,9 +46,9 @@ It can be used to
        >>> d['libraries']
        [u'gtk+-2.0', u'glib-2.0']
 
-   The ``pkgconfig.parse`` function return a dictonary of list.
-   The lists returned are an accurate representations of the equivalent
-   ``pkg-config`` call, both in content and order.
+   The ``pkgconfig.parse`` function returns a dictonary of lists.
+   The lists returned are accurate representations of the equivalent
+   ``pkg-config`` call's result, both in content and order.
 
 If ``pkg-config`` is not on the path, raises ``EnvironmentError``.
 
