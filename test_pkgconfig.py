@@ -8,7 +8,7 @@ PACKAGE_NAME = 'fake-gtk+-3.0'
 
 def test_exists():
     assert pkgconfig.exists(PACKAGE_NAME)
-
+    assert pkgconfig.exists('fake-openssl')
 
 @pytest.mark.parametrize("version,expected",[
     ('3.2.1', True),
@@ -23,8 +23,58 @@ def test_version(version, expected):
     assert pkgconfig.installed(PACKAGE_NAME, version) == expected
 
 
+@pytest.mark.parametrize("version,expected",[
+    ('1.1.0j', True),
+    ('==1.1.0j', True),
+    ('==1.1.0k', False),
+    ('>= 1.1.0', True),
+    ('> 1.2.0', False),
+    ('< 1.2.0', True),
+    ('< 1.1.0', False),
+    ('>= 1.1', True),
+    ('> 1.2', False),
+    ('< 1.2', True),
+    ('< 1.1', False),
+    ('>= 1.1.0c', True),
+    ('>= 1.1.0k', False),
+    # PLEASE NOTE:
+    # the letters have no semantics, except string ordering, see also the
+    # comment in the test below.
+    # comparing release with beta, like "1.2.3" > "1.2.3b" does not work.
+])
+def test_openssl(version, expected):
+    assert pkgconfig.installed('fake-openssl', version) == expected
+
+
+@pytest.mark.parametrize("version,expected",[
+    ('1.2.3b4', True),
+    ('==1.2.3b4', True),
+    ('==1.2.3', False),
+    ('>= 1.2.3b3', True),
+    ('< 1.2.3b5', True),
+    # PLEASE NOTE:
+    # sadly, when looking at all (esp. non-python) libraries out there, there
+    # is no agreement on the semantics of letters appended to version numbers.
+    # e.g. for a release candidate, some might use "c", but other also might
+    # use "rc" or whatever. stuff like openssl does not use the letters to
+    # represent release status, but rather minor updates using a-z.
+    # so, as there is no real standard / agreement, we can NOT assume any
+    # advanced semantics here (like we could for python packages).
+    # thus we do NOT implement any special semantics for the letters,
+    # except string ordering
+    # thus, comparing a version with a letter-digits appendix to one without
+    # may or may not give the desired result.
+    # e.g. python packages use a1 for alpha 1, b2 for beta 2, c3 for release
+    # candidate 3 and <nothing> for release.
+    # we do not implement this semantics, "1.2.3" > "1.2.3b1" does not work.
+])
+def test_dld_pkg(version, expected):
+    assert pkgconfig.installed('fake-dld-pkg', version) == expected
+
+
 def test_modversion():
     assert pkgconfig.modversion(PACKAGE_NAME) == '3.2.1'
+    assert pkgconfig.modversion('fake-openssl') == '1.1.0j'
 
 
 def test_cflags():

@@ -35,11 +35,33 @@ def _compare_versions(v1, v2):
     Compare two version strings and return -1, 0 or 1 depending on the equality
     of the subset of matching version numbers.
 
-    The implementation is taken from the top answer at
+    The implementation is inspired by the top answer at
     http://stackoverflow.com/a/1714190/997768.
     """
     def normalize(v):
-        return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
+        # strip trailing .0 or .00 or .0.0 or ...
+        v = re.sub(r'(\.0+)*$', '', v)
+        result = []
+        for part in v.split('.'):
+            # just digits
+            m = re.match(r'^(\d+)$', part)
+            if m:
+                result.append(int(m.group(1)))
+                continue
+            # digits letters
+            m = re.match(r'^(\d+)([a-zA-Z]+)$', part)
+            if m:
+                result.append(int(m.group(1)))
+                result.append(m.group(2))
+                continue
+            # digits letters digits
+            m = re.match(r'^(\d+)([a-zA-Z]+)(\d+)$', part)
+            if m:
+                result.append(int(m.group(1)))
+                result.append(m.group(2))
+                result.append(int(m.group(3)))
+                continue
+        return tuple(result)
 
     n1 = normalize(v1)
     n2 = normalize(v2)
@@ -49,7 +71,7 @@ def _compare_versions(v1, v2):
 
 def _split_version_specifier(spec):
     """Splits version specifiers in the form ">= 0.1.2" into ('0.1.2', '>=')"""
-    m = re.search(r'([<>=]?=?)?\s*((\d*\.)*\d*)', spec)
+    m = re.search(r'([<>=]?=?)?\s*([0-9.a-zA-Z]+)', spec)
     return m.group(2), m.group(1)
 
 

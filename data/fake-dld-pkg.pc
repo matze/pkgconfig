@@ -1,0 +1,9 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: BetaPkg
+Description: fake package with a digit-letter-digit version number for testing
+Requires:
+Version: 1.2.3b4
