@@ -246,7 +246,8 @@ def parse(packages, static=False):
 
     result['define_macros'] = [split(m) for m in result['define_macros']]
 
-    return result
+    # only have members with values not being the empty list (which is default anyway):
+    return collections.defaultdict(list, ((k, v) for k, v in result.items() if v != []))
 
 
 def list_all():
