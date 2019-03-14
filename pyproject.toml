@@ -1,0 +1,26 @@
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "pkgconfig"
+version = "1.4.0"
+license = "MIT"
+description = "Interface Python with pkg-config"
+authors = ["Matthias Vogelgesang <matthias.vogelgesang@gmail.com>"]
+readme = "README.rst"
+homepage = "https://github.com/matze/pkgconfig"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Build Tools",
+]
+
+[tool.poetry.dependencies]
+python = "~2.7 || ^3.3"
+
+[tool.poetry.dev-dependencies]
+pytest = [
+    { version = "^3.8.2", python = "~2.7 || ^3.4" }
+]
