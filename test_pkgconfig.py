@@ -10,7 +10,8 @@ def test_exists():
     assert pkgconfig.exists(PACKAGE_NAME)
     assert pkgconfig.exists('fake-openssl')
 
-@pytest.mark.parametrize("version,expected",[
+
+@pytest.mark.parametrize("version,expected", [
     ('3.2.1', True),
     ('==3.2.1', True),
     ('==3.2.2', False),
@@ -23,7 +24,7 @@ def test_version(version, expected):
     assert pkgconfig.installed(PACKAGE_NAME, version) == expected
 
 
-@pytest.mark.parametrize("version,expected",[
+@pytest.mark.parametrize("version,expected", [
     ('1.1.0j', True),
     ('==1.1.0j', True),
     ('==1.1.0k', False),
@@ -46,7 +47,7 @@ def test_openssl(version, expected):
     assert pkgconfig.installed('fake-openssl', version) == expected
 
 
-@pytest.mark.parametrize("version,expected",[
+@pytest.mark.parametrize("version,expected", [
     ('1.2.3b4', True),
     ('==1.2.3b4', True),
     ('==1.2.3', False),

@@ -81,7 +81,7 @@ def _convert_error(func):
         try:
             return func(*args, **kwargs)
         except OSError as e:
-            raise EnvironmentError("pkg-config is probably not installed. Could not run pkg-config: %r"%e)
+            raise EnvironmentError("pkg-config probably not installed: %r" % e)
     return _wrapper
 
 
@@ -246,8 +246,9 @@ def parse(packages, static=False):
 
     result['define_macros'] = [split(m) for m in result['define_macros']]
 
-    # only have members with values not being the empty list (which is default anyway):
-    return collections.defaultdict(list, ((k, v) for k, v in result.items() if v != []))
+    # only have members with values not being the empty list (which is default
+    # anyway):
+    return collections.defaultdict(list, ((k, v) for k, v in result.items() if v))
 
 
 def list_all():
