@@ -30,6 +30,15 @@ from functools import wraps
 from subprocess import call, PIPE, Popen
 
 
+class PackageNotFoundError(Exception):
+    """
+    Raised if a package was not found.
+    """
+    def __init__(self, package):
+        message = '%s not found' % package
+        super(PackageNotFoundError, self).__init__(message)
+
+
 def _compare_versions(v1, v2):
     """
     Compare two version strings and return -1, 0 or 1 depending on the equality
@@ -85,6 +94,15 @@ def _convert_error(func):
     return _wrapper
 
 
+def _build_options(option, static=False):
+    return (option, '--static') if static else (option,)
+
+
+def _raise_if_not_exists(package):
+    if not exists(package):
+        raise PackageNotFoundError(package)
+
+
 @_convert_error
 def _query(package, *options):
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
@@ -93,10 +111,6 @@ def _query(package, *options):
     out, err = proc.communicate()
 
     return out.rstrip().decode('utf-8')
-
-
-def _build_options(option, static=False):
-    return (option, '--static') if static else (option,)
 
 
 @_convert_error
@@ -127,6 +141,7 @@ def cflags(package):
 
     If ``pkg-config`` is not on path, raises ``EnvironmentError``.
     """
+    _raise_if_not_exists(package)
     return _query(package, '--cflags')
 
 
@@ -136,6 +151,7 @@ def modversion(package):
 
     If `pkg-config` is not in the path, raises ``EnvironmentError``.
     """
+    _raise_if_not_exists(package)
     return _query(package, '--modversion')
 
 
@@ -146,7 +162,7 @@ def libs(package, static=False):
     The static specifier will also include libraries for static linking (i.e.,
     includes any private libraries).
     """
-
+    _raise_if_not_exists(package)
     return _query(package, *_build_options('--libs', static=static))
 
 
@@ -155,10 +171,7 @@ def variables(package):
     Return a dictionary of all the variables defined in the .pc pkg-config file
     of 'package'.
     """
-    if not exists(package):
-        msg = "Package `{0}' does not exist in PKG_CONFIG_PATH".format(package)
-        raise ValueError(msg)
-
+    _raise_if_not_exists(package)
     result = _query(package, '--print-variables')
     names = (x.strip() for x in result.split('\n') if x != '')
     return dict(((x, _query(package, '--variable={0}'.format(x)).strip()) for x in names))
@@ -231,6 +244,9 @@ def parse(packages, static=False):
 
     If ``pkg-config`` is not on path, raises ``EnvironmentError``.
     """
+    for package in packages.split():
+        _raise_if_not_exists(package)
+
     out = _query(packages, *_build_options('--cflags --libs', static=static))
     out = out.replace('\\"', '')
     result = collections.defaultdict(list)
