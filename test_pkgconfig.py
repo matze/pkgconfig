@@ -78,7 +78,7 @@ def test_modversion():
     assert pkgconfig.modversion('fake-openssl') == '1.1.0j'
 
     with pytest.raises(pkgconfig.PackageNotFoundError):
-        pkgconfig.modversion('doesnotexists')
+        pkgconfig.modversion('doesnotexist')
 
 
 def test_cflags():
@@ -88,7 +88,7 @@ def test_cflags():
         assert flag in ('-DGSEAL_ENABLE', '-I/usr/include/gtk-3.0')
 
     with pytest.raises(pkgconfig.PackageNotFoundError):
-        pkgconfig.cflags('doesnotexists')
+        pkgconfig.cflags('doesnotexist')
 
 
 def test_libs():
@@ -98,7 +98,7 @@ def test_libs():
         assert flag in ('-L/usr/lib_gtk_foo', '-lgtk-3')
 
     with pytest.raises(pkgconfig.PackageNotFoundError):
-        pkgconfig.libs('doesnotexists')
+        pkgconfig.libs('doesnotexist')
 
 
 def test_libs_static():
@@ -121,7 +121,7 @@ def test_parse():
     assert '/usr/include/python2.7' in config['include_dirs']
 
     with pytest.raises(pkgconfig.PackageNotFoundError):
-        pkgconfig.parse('doesnotexists')
+        pkgconfig.parse('doesnotexist')
 
 
 def test_parse_static():
@@ -154,4 +154,4 @@ def test_variables():
     assert variables['includedir'] == '/usr/include'
 
     with pytest.raises(pkgconfig.PackageNotFoundError):
-        pkgconfig.variables('doesnotexists')
+        pkgconfig.variables('doesnotexist')
