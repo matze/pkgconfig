@@ -58,6 +58,15 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.5.0
+~~~~~~~~~~~~~
+
+- Use poetry instead of setuptools directly
+- Fix #42: raise exception if package is missing
+- Fix version parsing for openssl-like version numbers, fixes #32
+- Fix #31: expose --modversion
+- Fix #30: strip whitespace from variable names
+
 Version 1.4.0
 ~~~~~~~~~~~~~
 

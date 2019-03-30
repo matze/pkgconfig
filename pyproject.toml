@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "pkgconfig"
-version = "1.4.0"
+version = "1.5.0"
 license = "MIT"
 description = "Interface Python with pkg-config"
 authors = ["Matthias Vogelgesang <matthias.vogelgesang@gmail.com>"]
