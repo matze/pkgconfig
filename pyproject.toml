@@ -21,6 +21,4 @@ classifiers = [
 python = "~2.7 || ^3.3"
 
 [tool.poetry.dev-dependencies]
-pytest = [
-    { version = "^3.8.2", python = "~2.7 || ^3.4" }
-]
+pytest = "^3.8.2"
