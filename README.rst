@@ -58,6 +58,12 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.5.2
+~~~~~~~~~~~~~
+
+- Update poetry dep
+- Improve CI
+
 Version 1.5.0
 ~~~~~~~~~~~~~
 
