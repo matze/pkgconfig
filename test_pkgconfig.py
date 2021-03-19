@@ -1,3 +1,4 @@
+from distutils.core import Extension
 import os
 import pytest
 import pkgconfig
@@ -132,6 +133,15 @@ def test_parse_static():
     assert 'pthread' in config['libraries']
     assert 'dl' in config['libraries']
     assert 'util' in config['libraries']
+
+
+def test_configure_extension():
+    ext = Extension('foo', ['foo.c'])
+    pkgconfig.configure_extension(ext, 'fake-gtk+-3.0 fake-python')
+    assert ext.extra_compile_args == [
+        '-I/usr/include/gtk-3.0', '-DGSEAL_ENABLE', '-I/usr/include/python2.7']
+    assert ext.extra_link_args == [
+        '-L/usr/lib_gtk_foo', '-lgtk-3', '-L/usr/lib_python_foo', '-lpython2.7']
 
 
 def test_listall():
