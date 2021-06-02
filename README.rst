@@ -24,6 +24,7 @@ It can be used to
        False
 
 -  return the version ::
+
        >>> pkgconfig.modversion('glib-2.0')
        '2.56.3'
 
@@ -45,6 +46,12 @@ It can be used to
        >>> d = pkgconfig.parse('glib-2.0 gtk+-2.0')
        >>> d['libraries']
        [u'gtk+-2.0', u'glib-2.0']
+
+   or ::
+
+       >>> ext = Extension('foo', ['foo.c'])
+       >>> # sets extension attributes as needed
+       >>> pkgconfig.configure_extension(ext, 'glib-2.0 gtk+-2.0')
 
    The ``pkgconfig.parse`` function returns a dictonary of lists.
    The lists returned are accurate representations of the equivalent
