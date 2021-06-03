@@ -65,6 +65,11 @@ The ``pkgconfig`` module is licensed under the MIT license.
 Changelog
 ---------
 
+Version 1.5.4
+~~~~~~~~~~~~~
+
+- Adjust pyproject.toml and drop Python 2 support
+
 Version 1.5.3
 ~~~~~~~~~~~~~
 
