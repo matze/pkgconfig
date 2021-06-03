@@ -5,7 +5,7 @@ pkgconfig
     :target: https://travis-ci.org/matze/pkgconfig
 
 ``pkgconfig`` is a Python module to interface with the ``pkg-config``
-command line tool and supports Python 2.6+ and 3.3+.
+command line tool for Python 3.3+.
 
 It can be used to
 
