@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: FakeLdOnly
+Description: fake package with only libs, not cflags
+Requires:
+Version: 1.2.3
+Libs: -L${libdir} -lfakeldonly
