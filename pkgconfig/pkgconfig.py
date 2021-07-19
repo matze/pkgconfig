@@ -279,7 +279,9 @@ def configure_extension(ext, packages, static=False):
     def query_and_extend(option, target):
         os_opts = ['--msvc-syntax'] if os.name == 'nt' else []
         flags = _query(packages, *os_opts, *_build_options(option, static=static))
-        target.extend(re.split(r'(?<!\\) ', flags.replace('\\"', '')))
+        flags = flags.replace('\\"', '')
+        if flags:
+            target.extend(re.split(r'(?<!\\) ', flags))
 
     query_and_extend('--cflags', ext.extra_compile_args)
     query_and_extend('--libs', ext.extra_link_args)

@@ -143,6 +143,11 @@ def test_configure_extension():
     assert sorted(ext.extra_link_args) == [
         '-L/usr/lib_gtk_foo', '-L/usr/lib_python_foo', '-lgtk-3', '-lpython2.7']
 
+    ext = Extension('foo', ['foo.c'])
+    pkgconfig.configure_extension(ext, 'fake-ldonly-pkg')
+    assert ext.extra_compile_args == []
+    assert ext.extra_link_args == ['-lfakeldonly']
+
 
 def test_listall():
     packages = pkgconfig.list_all()
