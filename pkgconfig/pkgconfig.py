@@ -135,14 +135,17 @@ def requires(package):
     return _query(package, '--print-requires').split('\n')
 
 
-def cflags(package):
+def cflags(package, keep_system=False):
     """
     Return the CFLAGS string returned by pkg-config.
 
     If ``pkg-config`` is not on path, raises ``EnvironmentError``.
     """
     _raise_if_not_exists(package)
-    return _query(package, '--cflags')
+    option = "--cflags"
+    if keep_system:
+        option += " --keep-system-cflags"
+    return _query(package, option)
 
 
 def modversion(package):
@@ -155,7 +158,7 @@ def modversion(package):
     return _query(package, '--modversion')
 
 
-def libs(package, static=False):
+def libs(package, static=False, keep_system=False):
     """
     Return the LDFLAGS string returned by pkg-config.
 
@@ -163,7 +166,10 @@ def libs(package, static=False):
     includes any private libraries).
     """
     _raise_if_not_exists(package)
-    return _query(package, *_build_options('--libs', static=static))
+    option = "--libs"
+    if keep_system:
+        option += " --keep-system-libs"
+    return _query(package, *_build_options(option, static=static))
 
 
 def variables(package):
