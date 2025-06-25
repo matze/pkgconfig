@@ -27,7 +27,7 @@ import shlex
 import re
 import collections
 from functools import wraps
-from subprocess import call, PIPE, Popen
+from subprocess import run, PIPE
 
 
 class PackageNotFoundError(Exception):
@@ -94,23 +94,44 @@ def _convert_error(func):
     return _wrapper
 
 
-def _build_options(option, static=False):
-    return (option, '--static') if static else (option,)
-
-
 def _raise_if_not_exists(package):
     if not exists(package):
         raise PackageNotFoundError(package)
 
 
+def _exec(*args):
+    pkg_config = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
+    split = lambda cmd: shlex.split(cmd, posix=True if os.name == 'posix' else False)
+    return run([*split(pkg_config), *args], stdout=PIPE, stderr=PIPE)
+
+
+_OPTION_MAP = {
+    '--keep-system-cflags': '1.2.0',
+    '--keep-system-libs': '1.2.0',
+    '--msvc-syntax': '1.4.0'
+}
+
+
+class OptionNotAvailableError(Exception):
+    """
+    Raised if an option is not available.
+    """
+    def __init__(self, option):
+        message = '%s is available only in pkgconf version %s or later' % (
+            option, _OPTION_MAP[option]
+        )
+        super(OptionNotAvailableError, self).__init__(message)
+
+
 @_convert_error
 def _query(package, *options):
-    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
-    cmd = '{0} {1} {2}'.format(pkg_config_exe, ' '.join(options), package)
-    proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-    out, err = proc.communicate()
-
-    return out.rstrip().decode('utf-8')
+    pkg_config_ver = _exec("--version").stdout.rstrip().decode('utf-8')
+    for option in options:
+        if option not in _OPTION_MAP:
+            continue
+        if _compare_versions(pkg_config_ver, _OPTION_MAP[option]) < 0:
+            raise OptionNotAvailableError(option)
+    return _exec(*options, package).stdout.rstrip().decode('utf-8')
 
 
 @_convert_error
@@ -118,11 +139,9 @@ def exists(package):
     """
     Return True if package information is available.
 
-    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` not in PATH, raises ``EnvironmentError``.
     """
-    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
-    cmd = '{0} --exists {1}'.format(pkg_config_exe, package).split()
-    return call(cmd) == 0
+    return _exec("--exists", package).returncode == 0
 
 
 @_convert_error
@@ -130,40 +149,54 @@ def requires(package):
     """
     Return a list of package names that is required by the package.
 
-    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` is not in PATH, raises ``EnvironmentError``.
     """
     return _query(package, '--print-requires').split('\n')
 
 
-def cflags(package):
+def cflags(package, keep_system=False):
     """
     Return the CFLAGS string returned by pkg-config.
 
-    If ``pkg-config`` is not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` is not in PATH, raises ``EnvironmentError``.
+
+    If ``keep_system`` is True but ``pkg-config`` found in PATH does not
+    support this option, raises ``FeatureNotAvailableError``.
     """
     _raise_if_not_exists(package)
-    return _query(package, '--cflags')
+    options = ['--cflags']
+    if keep_system:
+        options.append('--keep-system-cflags')
+    return _query(package, *options)
 
 
 def modversion(package):
     """
     Return the version returned by pkg-config.
 
-    If `pkg-config` is not in the path, raises ``EnvironmentError``.
+    If `pkg-config` is not in PATH, raises ``EnvironmentError``.
     """
     _raise_if_not_exists(package)
     return _query(package, '--modversion')
 
 
-def libs(package, static=False):
+def libs(package, static=False, keep_system=False):
     """
     Return the LDFLAGS string returned by pkg-config.
 
     The static specifier will also include libraries for static linking (i.e.,
     includes any private libraries).
+
+    If ``keep_system`` is True but ``pkg-config`` found in PATH does not support
+    this option, raises ``FeatureNotAvailableError``.
     """
     _raise_if_not_exists(package)
-    return _query(package, *_build_options('--libs', static=static))
+    options = ['--libs']
+    if keep_system:
+        options.append('--keep-system-libs')
+    if static:
+        options.append('--static')
+    return _query(package, *options)
 
 
 def variables(package):
@@ -193,7 +226,7 @@ def installed(package, version):
     >>> installed('foo', '>= 0.0.4')
     True
 
-    If ``pkg-config`` not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` not in PATH, raises ``EnvironmentError``.
     """
     if not exists(package):
         return False
@@ -231,7 +264,7 @@ _PARSE_MAP = {
 }
 
 
-def parse(packages, static=False):
+def parse(packages, static=False, keep_system=()):
     """
     Parse the output from pkg-config about the passed package or packages.
 
@@ -242,12 +275,22 @@ def parse(packages, static=False):
     The static specifier will also include libraries for static linking (i.e.,
     includes any private libraries).
 
-    If ``pkg-config`` is not on path, raises ``EnvironmentError``.
+    If ``pkg-config`` is not in PATH, raises ``EnvironmentError``.
+
+    If ``keep_system`` is not empty but ``pkg-config`` found in PATH does not
+    support the specified option(s), raises ``FeatureNotAvailableError``.
     """
     for package in packages.split():
         _raise_if_not_exists(package)
 
-    out = _query(packages, *_build_options('--cflags --libs', static=static))
+    options = ['--cflags', '--libs']
+    if 'cflags' in keep_system:
+        options.append('--keep-system-cflags')
+    if 'libs' in keep_system:
+        options.append('--keep-system-libs')
+    if static:
+        options.append('--static')
+    out = _query(packages, *options)
     out = out.replace('\\"', '')
     result = collections.defaultdict(list)
 
@@ -267,24 +310,44 @@ def parse(packages, static=False):
     return collections.defaultdict(list, ((k, v) for k, v in result.items() if v))
 
 
-def configure_extension(ext, packages, static=False):
+def _detect_msvc():
+    try:
+        from distutils.ccompiler import get_default_compiler
+        return get_default_compiler() == 'msvc'
+    except ModuleNotFoundError:
+        return False
+
+
+def configure_extension(ext, packages, static=False, keep_system=()):
     """
     Append the ``--cflags`` and ``--libs`` of a space-separated list of
     *packages* to the ``extra_compile_args`` and ``extra_link_args`` of a
     distutils/setuptools ``Extension``.
+
+    If ``keep_system`` is not empty but ``pkg-config`` found in PATH does not
+    support the specified option(s), raises ``FeatureNotAvailableError``.
     """
     for package in packages.split():
         _raise_if_not_exists(package)
 
-    def query_and_extend(option, target):
-        os_opts = ['--msvc-syntax'] if os.name == 'nt' else []
-        flags = _query(packages, *os_opts, *_build_options(option, static=static))
+    def query_and_extend(options, target):
+        flags = _query(packages, *options)
         flags = flags.replace('\\"', '')
         if flags:
             target.extend(re.split(r'(?<!\\) ', flags))
 
-    query_and_extend('--cflags', ext.extra_compile_args)
-    query_and_extend('--libs', ext.extra_link_args)
+    options = []
+    if 'cflags' in keep_system:
+        options.append('--keep-system-cflags')
+    if 'libs' in keep_system:
+        options.append('--keep-system-libs')
+    if static:
+        options.append('--static')
+    if _detect_msvc():
+        options.append('--msvc-syntax')
+
+    query_and_extend([*options, '--cflags'], ext.extra_compile_args)
+    query_and_extend([*options, '--libs'], ext.extra_link_args)
 
 
 def list_all():
